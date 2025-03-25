@@ -35,6 +35,7 @@ export class FingerPrintService {
 
     /** Менеджер работы с cookie. */
     private readonly COOKIE_MANAGER: Options['cookie'];
+
     /** Промис, предотвращающий гонку данных при загрузке отпечатка. */
     private _loadPromise: Promise<string> | null = null;
 
