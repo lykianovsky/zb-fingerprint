@@ -122,6 +122,7 @@ export class FingerPrintService {
         }
 
         const savedFingerPrint = this.get();
+
         if (savedFingerPrint) {
             return savedFingerPrint;
         }
@@ -153,9 +154,13 @@ export class FingerPrintService {
         };
 
         const promise = createFingerPrint();
+
         this._loadPromise = promise;
+
         const result = await promise;
+
         this._loadPromise = null;
+
         return result;
     }
 }
