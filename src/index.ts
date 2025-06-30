@@ -31,6 +31,9 @@ export class FingerPrintService {
     /** Менеджер работы с cookie. */
     private readonly COOKIE_MANAGER: Options['cookie'];
 
+    /** Промис, предотвращающий гонку данных при загрузке отпечатка. */
+    private _loadPromise: Promise<string> | null = null;
+
     constructor(options: Options) {
         this.STORAGE_KEY = options.storageKey;
         this.MIN_VALUE_LENGTH = options.minLength;
@@ -119,10 +122,24 @@ export class FingerPrintService {
             return savedFingerPrint;
         }
 
-        const customFingerprint = await this.buildCustomFingerprint();
+        if (this._loadPromise) {
+            return await this._loadPromise;
+        }
 
-        this.set(customFingerprint);
+        const createFingerPrint = async () => {
+            const customFingerprint = await this.buildCustomFingerprint();
+            this.set(customFingerprint);
+            return customFingerprint;
+        };
 
-        return customFingerprint;
+        const promise = createFingerPrint();
+
+        this._loadPromise = promise;
+
+        const result = await promise;
+
+        this._loadPromise = null;
+
+        return result;
     }
 }
