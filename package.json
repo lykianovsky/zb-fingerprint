@@ -1,6 +1,6 @@
 {
   "name": "zb-fingerprint",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "main": "./dist/zb-fingerprint.mjs",
   "module": "./dist/zb-fingerprint.mjs",
   "types": "./dist/index.d.ts",
