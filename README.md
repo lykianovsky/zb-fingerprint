@@ -1,12 +1,7 @@
 # Finger Print
 
 ### Описание
-Этот сервис позволяет получать и сохранять уникальный идентификатор пользователя (fingerprint). Использует `@fingerprintjs/fingerprintjs-pro` и fallback-механизм на основе данных браузера.
-
-### Установка
-```sh
-npm install @fingerprintjs/fingerprintjs-pro
-```
+Этот сервис позволяет получать и сохранять уникальный идентификатор пользователя (fingerprint)
 
 ### Использование
 ```ts
@@ -15,7 +10,6 @@ import { FingerPrintService } from './fingerprint-service'
 const fingerprintService = new FingerPrintService({
     storageKey: 'user_fingerprint',
     minLength: 32,
-    publicKey: 'ВАШ_PUBLIC_KEY',
     cookie: {
         get: (key) => document.cookie.split('; ').find(row => row.startsWith(key))?.split('=')[1] || null,
         set: (key, value) => document.cookie = `${key}=${value}; path=/;`,

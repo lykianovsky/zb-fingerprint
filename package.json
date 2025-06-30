@@ -53,8 +53,6 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
-    "@fingerprintjs/fingerprintjs-pro": "^3.11.8",
-    "crypto-js": "^4.2.0",
-    "js-cookie": "^3.0.5"
+    "crypto-js": "^4.2.0"
   }
 }

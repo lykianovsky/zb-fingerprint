@@ -10,8 +10,6 @@ interface Options {
     storageKey: string;
     /** Минимальная длина допустимого отпечатка. */
     minLength: number;
-    /** Публичный ключ API FingerprintJS. */
-    publicKey: string;
     /** Объект для управления cookie. */
     cookie: {
         get: (key: string) => string | null;
@@ -30,19 +28,12 @@ export class FingerPrintService {
     /** Минимальная допустимая длина отпечатка. */
     private readonly MIN_VALUE_LENGTH: Options['minLength'];
 
-    /** Публичный API-ключ для FingerprintJS. */
-    private readonly PUBLIC_KEY: Options['publicKey'];
-
     /** Менеджер работы с cookie. */
     private readonly COOKIE_MANAGER: Options['cookie'];
-
-    /** Промис, предотвращающий гонку данных при загрузке отпечатка. */
-    private _loadPromise: Promise<string> | null = null;
 
     constructor(options: Options) {
         this.STORAGE_KEY = options.storageKey;
         this.MIN_VALUE_LENGTH = options.minLength;
-        this.PUBLIC_KEY = options.publicKey;
         this.COOKIE_MANAGER = options.cookie;
     }
 
@@ -128,40 +119,10 @@ export class FingerPrintService {
             return savedFingerPrint;
         }
 
-        if (this._loadPromise) {
-            return await this._loadPromise;
-        }
+        const customFingerprint = await this.buildCustomFingerprint();
 
-        const fingerprintAPI = FingerprintJS.load({ apiKey: this.PUBLIC_KEY, ...options });
+        this.set(customFingerprint);
 
-        const createFingerPrint = async () => {
-            try {
-                const result = await fingerprintAPI.then(publicAgent => publicAgent.get());
-                const { visitorId } = result;
-
-                if (!this.isValid(visitorId)) {
-                    throw new Error(
-                        `fingerprintAPI return from request invalid visitorId: ${visitorId}`,
-                    )
-                }
-
-                this.set(visitorId);
-                return visitorId;
-            } catch {
-                const customFingerprint = await this.buildCustomFingerprint();
-                this.set(customFingerprint);
-                return customFingerprint;
-            }
-        };
-
-        const promise = createFingerPrint();
-
-        this._loadPromise = promise;
-
-        const result = await promise;
-
-        this._loadPromise = null;
-
-        return result;
+        return customFingerprint;
     }
 }
